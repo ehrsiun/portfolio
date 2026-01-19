@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Personal portfolio of [Your Name]." />
+
+  <title>[Your Name] — Portfolio</title>
+
+  <!-- Optional: system font stack for modern, clean look -->
+  <style>
+    :root{
+      --bg: #ffffff;
+      --panel: #fafafa;
+      --text: #0b0c0f;
+      --muted: #5b6472;
+      --border: rgba(15, 20, 30, .12);
+      --shadow: 0 10px 30px rgba(0,0,0,.06);
+
+      --radius: 18px;
+
+      --space-1: .5rem;
+      --space-2: .75rem;
+      --space-3: 1rem;
+      --space-4: 1.5rem;
+      --space-5: 2rem;
+      --space-6: 3rem;
+
+      --max: 1100px;
+
+      --accent: #2a5bff;
+      --accent-2: #14b8a6;
+
+      --h1: clamp(2.25rem, 5vw, 3.5rem);
+      --h2: clamp(1.5rem, 2.6vw, 2rem);
+      --h3: 1.125rem;
+      --p: 1.02rem;
+    }
+
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg: #0b0c0f;
+        --panel: #0f1217;
+        --text: #f3f5f7;
+        --muted: #a6b0bf;
+        --border: rgba(255,255,255,.12);
+        --shadow: 0 12px 35px rgba(0,0,0,.35);
+        --accent: #7aa2ff;
+        --accent-2: #2dd4bf;
+      }
+    }
+
+    *{ box-sizing: border-box; }
+    html{ scroll-behavior: smooth; }
+    body{
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      letter-spacing: -0.01em;
+    }
+
+    /* Utility */
+    .container{
+      width: min(100% - 2rem, var(--max));
+      margin-inline: auto;
+    }
+    .sr-only{
+      position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+      overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+    }
+    .pill{
+      display:inline-flex;
+      gap:.5rem;
+      align-items:center;
+      padding:.4rem .7rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--panel) 70%, transparent);
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    /* Header / Nav */
+    header{
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+      background: color-mix(in srgb, var(--bg) 70%, transparent);
+      border-bottom: 1px solid var(--border);
+    }
+    nav{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      padding: .9rem 0;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:.75rem;
+      text-decoration: none;
+      color: inherit;
+    }
+    .logo{
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: radial-gradient(120% 120% at 20% 20%, var(--accent), transparent 55%),
+                  radial-gradient(120% 120% at 80% 80%, var(--accent-2), transparent 50%),
+                  var(--panel);
+      box-shadow: var(--shadow);
+    }
+    .brand span{
+      font-weight: 650;
+      letter-spacing: -0.02em;
+    }
+    .navlinks{
+      display:flex;
+      gap: .4rem;
+      align-items:center;
+    }
+    .navlinks a{
+      text-decoration:none;
+      color: var(--muted);
+      padding: .55rem .75rem;
+      border-radius: 12px;
+      border: 1px solid transparent;
+    }
+    .navlinks a:hover{
+      color: var(--text);
+      border-color: var(--border);
+      background: var(--panel);
+    }
+
+    /* Hero */
+    main{ padding: var(--space-6) 0; }
+    .hero{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: var(--space-6);
+      align-items: start;
+    }
+    @media (max-width: 900px){
+      .hero{ grid-template-columns: 1fr; }
+    }
+    .hero h1{
+      font-size: var(--h1);
+      line-height: 1.05;
+      margin: .4rem 0 1rem;
+      letter-spacing: -0.04em;
+    }
+    .hero p{
+      font-size: var(--p);
+      color: var(--muted);
+      margin: 0 0 1.2rem;
+      max-width: 62ch;
+    }
+    .cta{
+      display:flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      margin-top: 1.25rem;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:.5rem;
+      padding: .85rem 1rem;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      color: var(--text);
+      background: var(--panel);
+      box-shadow: 0 1px 0 rgba(255,255,255,.06) inset;
+    }
+    .btn.primary{
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+      background: color-mix(in srgb, var(--accent) 12%, var(--panel));
+    }
+    .btn:hover{ transform: translateY(-1px); }
+    .btn:active{ transform: translateY(0); }
+
+    /* Sidebar card */
+    .card{
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--panel) 85%, transparent), var(--panel));
+      border-radius: var(--radius);
+      padding: 1.1rem;
+      box-shadow: var(--shadow);
+    }
+    .card h2{
+      font-size: 1rem;
+      letter-spacing: -0.01em;
+      margin: 0 0 .75rem;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .facts{
+      display:grid;
+      gap: .75rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .facts li{
+      padding: .75rem;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--bg) 70%, transparent);
+    }
+    .facts strong{ display:block; font-size: 1rem; }
+    .facts span{ color: var(--muted); font-size: .95rem; }
+
+    /* Sections */
+    section{
+      margin-top: var(--space-6);
+    }
+    .section-title{
+      display:flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .section-title h2{
+      margin: 0;
+      font-size: var(--h2);
+      letter-spacing: -0.03em;
+    }
+    .section-title p{
+      margin: 0;
+      color: var(--muted);
+      max-width: 55ch;
+    }
+
+    /* Work grid */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 1rem;
+    }
+    .project{
+      grid-column: span 6;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: var(--radius);
+      overflow:hidden;
+      box-shadow: var(--shadow);
+      text-decoration:none;
+      color: inherit;
+      display:flex;
+      flex-direction: column;
+      min-height: 240px;
+    }
+    .project:hover{ transform: translateY(-2px); }
+    .thumb{
+      aspect-ratio: 16 / 9;
+      background:
+        linear-gradient(120deg, color-mix(in srgb, var(--accent) 40%, transparent), transparent 55%),
+        linear-gradient(180deg, color-mix(in srgb, var(--accent-2) 24%, transparent), transparent 70%),
+        color-mix(in srgb, var(--bg) 40%, var(--panel));
+      border-bottom: 1px solid var(--border);
+    }
+    .project .body{
+      padding: 1rem;
+      display:flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+    .project h3{
+      margin: 0;
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
+    }
+    .project p{
+      margin: 0;
+      color: var(--muted);
+      font-size: .98rem;
+    }
+    .tags{
+      margin-top: .25rem;
+      display:flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 900px){
+      .project{ grid-column: span 12; }
+    }
+
+    /* About / Contact */
+    .about{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 900px){
+      .about{ grid-template-columns: 1fr; }
+    }
+    .about .card p{
+      margin: 0;
+      color: var(--muted);
+      font-size: var(--p);
+    }
+    footer{
+      margin-top: var(--space-6);
+      padding: 2rem 0 3rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .footer-row{
+      display:flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .links{
+      display:flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+    }
+    .links a{
+      color: var(--muted);
+      text-decoration:none;
+      border-bottom: 1px solid transparent;
+    }
+    .links a:hover{
+      color: var(--text);
+      border-bottom-color: var(--border);
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <nav aria-label="Primary">
+        <a class="brand" href="#top">
+          <div class="logo" aria-hidden="true"></div>
+          <span>[Your Name]</span>
+        </a>
+
+        <div class="navlinks">
+          <a href="#work">Work</a>
+          <a href="#about">About</a>
+          <a href="#contact">Contact</a>
+          <a class="btn primary" href="#contact" style="padding:.6rem .85rem;">Let’s talk</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <div class="container">
+      <!-- HERO -->
+      <div class="hero">
+        <div>
+          <div class="pill">Available for internships · 2026</div>
+          <h1>Visual Development + Illustration, with a clean eye for design.</h1>
+          <p>
+            I’m <strong>[Your Name]</strong>, a student artist building worlds for film, TV, and animation.
+            I focus on strong composition, color, and atmosphere, and I love making work that feels intentional and modern.
+          </p>
+
+          <div class="cta">
+            <a class="btn primary" href="#work">View selected work</a>
+            <a class="btn" href="[link-to-resume.pdf]" target="_blank" rel="noopener">Resume</a>
+            <a class="btn" href="mailto:[you@email.com]">Email me</a>
+          </div>
+        </div>
+
+        <aside class="card" aria-label="Quick facts">
+          <h2>At a glance</h2>
+          <ul class="facts">
+            <li>
+              <strong>Focus</strong>
+              <span>VisDev, illustration, color, matte painting</span>
+            </li>
+            <li>
+              <strong>Tools</strong>
+              <span>Photoshop · Procreate · After Effects (edit as needed)</span>
+            </li>
+            <li>
+              <strong>Based in</strong>
+              <span>[City], [State] · Open to remote</span>
+            </li>
+          </ul>
+        </aside>
+      </div>
+
+      <!-- WORK -->
+      <section id="work" aria-label="Selected work">
+        <div class="section-title">
+          <h2>Selected work</h2>
+          <p>Projects, studies, and experiments. Click a card to open a case study or gallery.</p>
+        </div>
+
+        <div class="grid">
+          <!-- Project 1 -->
+          <a class="project" href="[project-1.html]">
+            <div class="thumb" role="img" aria-label="Project thumbnail placeholder"></div>
+            <div class="body">
+              <h3>Project Title One</h3>
+              <p>1–2 lines about the project. What it is, what you did, and why it matters.</p>
+              <div class="tags" aria-label="Project tags">
+                <span class="pill">VisDev</span>
+                <span class="pill">Color</span>
+                <span class="pill">Worldbuilding</span>
+              </div>
+            </div>
+          </a>
+
+          <!-- Project 2 -->
+          <a class="project" href="[project-2.html]">
+            <div class="thumb" role="img" aria-label="Project thumbnail placeholder"></div>
+            <div class="body">
+              <h3>Project Title Two</h3>
+              <p>Short description. You can swap these for image-based tiles later.</p>
+              <div class="tags" aria-label="Project tags">
+                <span class="pill">Illustration</span>
+                <span class="pill">Lighting</span>
+              </div>
+            </div>
+          </a>
+
+          <!-- Project 3 -->
+          <a class="project" href="[project-3.html]">
+            <div class="thumb" role="img" aria-label="Project thumbnail placeholder"></div>
+            <div class="body">
+              <h3>Project Title Three</h3>
+              <p>Short description. Consider “problem → process → result.”</p>
+              <div class="tags" aria-label="Project tags">
+                <span class="pill">Matte</span>
+                <span class="pill">Environment</span>
+              </div>
+            </div>
+          </a>
+
+          <!-- Project 4 -->
+          <a class="project" href="[project-4.html]">
+            <div class="thumb" role="img" aria-label="Project thumbnail placeholder"></div>
+            <div class="body">
+              <h3>Project Title Four</h3>
+              <p>Short description. Keep it specific and concrete if you can.</p>
+              <div class="tags" aria-label="Project tags">
+                <span class="pill">Design</span>
+                <span class="pill">Typography</span>
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section id="about" aria-label="About">
+        <div class="section-title">
+          <h2>About</h2>
+          <p>A quick bio plus what you’re looking for right now.</p>
+        </div>
+
+        <div class="about">
+          <div class="card">
+            <h2>Bio</h2>
+            <p>
+              Write 3–5 sentences about your interests, what kind of stories/genres you love,
+              and what you want to do in the industry. Keep it warm and direct.
+            </p>
+          </div>
+
+          <div class="card">
+            <h2>Currently</h2>
+            <ul class="facts">
+              <li>
+                <strong>Seeking</strong>
+                <span>Internship opportunities (Summer 2026)</span>
+              </li>
+              <li>
+                <strong>Best work</strong>
+                <span>Color keys, environments, and character moments</span>
+              </li>
+              <li>
+                <strong>Collab</strong>
+                <span>Open to short film / student team projects</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTACT -->
+      <section id="contact" aria-label="Contact">
+        <div class="section-title">
+          <h2>Contact</h2>
+          <p>If you want to work together, send a quick note. I reply fastest by email.</p>
+        </div>
+
+        <div class="card">
+          <div class="cta">
+            <a class="btn primary" href="mailto:[you@email.com]">you@email.com</a>
+            <a class="btn" href="[https://instagram.com/yourhandle]" target="_blank" rel="noopener">Instagram</a>
+            <a class="btn" href="[https://www.linkedin.com/in/yourname]" target="_blank" rel="noopener">LinkedIn</a>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <div class="footer-row">
+          <small>© <span id="year"></span> [Your Name]. Built with HTML/CSS.</small>
+          <div class="links" aria-label="Footer links">
+            <a href="#top">Back to top</a>
+            <a href="[link-to-resume.pdf]" target="_blank" rel="noopener">Resume</a>
+            <a href="mailto:[you@email.com]">Email</a>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </main>
+
+  <script>
+    // Small nicety: auto-update the footer year
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

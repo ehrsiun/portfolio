@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="[Project title] case study by Erin Hsu." />
 
-  <title>[Project Title] — Erin Hsu</title>
+  <title>Rapidly building the game of Crossy Road using AI</title>
 
   <style>
     :root{
@@ -352,17 +352,13 @@
       <div class="project-hero">
         <div>
           <div class="pill">
-            <span>[Category]</span>
-            <span>·</span>
-            <span>[Year]</span>
-            <span>·</span>
-            <span>[Role / Medium]</span>
+            <span>coding with AI</span>
           </div>
 
-          <h1>[Project Title]</h1>
+          <h1>Rapidly building the game of Crossy Road using AI</h1>
 
           <p class="lede">
-            [1–3 sentence overview. What is this project? What did you make? What was the goal?]
+            A crossy road game built in Python using ChatGPT 5.2 and VS Code.
           </p>
 
           <div style="display:flex; gap:.75rem; flex-wrap:wrap;">
@@ -370,30 +366,6 @@
             <a class="btn" href="[link-to-final-work]" target="_blank" rel="noopener">View final</a>
           </div>
         </div>
-
-        <!-- Right: quick meta -->
-        <aside class="card" aria-label="Project details">
-          <p class="side-title" style="margin-top:0;">Project details</p>
-
-          <div class="meta">
-            <div class="meta-row">
-              <span>Timeline</span>
-              <strong>[e.g., 2 weeks / Fall 2025]</strong>
-            </div>
-            <div class="meta-row">
-              <span>Tools</span>
-              <strong>[e.g., Figma, Photoshop]</strong>
-            </div>
-            <div class="meta-row">
-              <span>Team</span>
-              <strong>[Solo / Team of 3]</strong>
-            </div>
-            <div class="meta-row">
-              <span>Deliverables</span>
-              <strong>[Poster, photo series, app, etc.]</strong>
-            </div>
-          </div>
-        </aside>
       </div>
 
       <!-- COVER IMAGE (swap src) -->
@@ -407,42 +379,68 @@
           <section id="overview" class="section anchor">
             <h2>Overview</h2>
             <p>
-              [What this project is. Context, prompt, and goals in 1 short paragraph.]
+              This project explores building a playable, Crossy Road–inspired game from scratch using Python and Pygame, 
+              with ChatGPT as a development collaborator. Starting from an empty repository, I designed and implemented 
+              a minimum viable version of the game, focusing on core mechanics such as grid-based movement, procedural 
+              lane generation, obstacle systems, collision detection, scoring, and camera behavior.
+              <br><br>
+              The project emphasizes rapid prototyping, iterative debugging, and learning-by-building. Rather than using 
+              a prebuilt engine template, I constructed the game’s architecture manually to better understand how fundamental 
+              game systems interact.
+              <br><br>
+              <strong>Project is available on GitHub:</strong> <a href="https://github.com/ehrsiun/Crossy-Road" target="_blank">https://github.com/ehrsiun/Crossy-Road</a>
             </p>
-            <ul>
+            <!-- <ul>
               <li><strong>Goal:</strong> [What you were trying to achieve]</li>
               <li><strong>Audience:</strong> [Who it’s for]</li>
               <li><strong>Constraints:</strong> [Time, format, requirements]</li>
-            </ul>
+            </ul> -->
           </section>
 
           <section id="process" class="section anchor">
             <h2>Process</h2>
             <p>
-              [High-level steps you took. Keep it scannable.]
+              I began by defining a clear minimum viable product (MVP): a grid-based character that hops forward through 
+              infinite lanes, avoids moving cars, and scores based on forward progress. Establishing this scope helped keep 
+              development focused on the core gameplay loop.
+              <br><br>
+              I set up a modular project structure separating gameplay logic, world generation, entities, UI, and utilities. 
+              This made it easier to build features incrementally and isolate bugs as the project grew.
+              <br><br>
+              Next, I implemented tile-based movement and gradually refined it into smooth animated hops with input buffering, 
+              allowing players to queue moves for responsive control. I added a simple camera system that follows the player’s 
+              forward progress and prevents backward scrolling exploits.
+              <br><br>
+              I then built a procedural lane generator that spawns new lanes ahead of the player and removes old ones behind. 
+              Road lanes randomly generate cars with varying speeds, sizes, and directions, creating endless variation without 
+              hand-authored levels.
+              <br><br>
+              Finally, I implemented collision detection, scoring, game states (start, playing, game over), and local score 
+              saving. Throughout development, I iterated through debugging environment issues, logic errors, and camera behavior,
+              using small targeted fixes and constant testing to improve stability and feel.
             </p>
-            <ul>
-              <li>[Research / inspiration / references]</li>
-              <li>[Sketching / iteration / testing]</li>
-              <li>[Production / polish / final decisions]</li>
-            </ul>
           </section>
 
           <!-- IMAGE + CAPTION BLOCK -->
-          <figure>
+          <!-- <figure>
             <img src="images/process-1.jpg" alt="[Describe this image]" />
             <figcaption>[Caption: what are we looking at and why does it matter?]</figcaption>
-          </figure>
+          </figure> -->
 
           <section id="solution" class="section anchor">
             <h2>Solution</h2>
+            <ul>
+                <li>Playable Crossy Road–style MVP with smooth hopping, responsive controls, and infinite procedural lanes</li>
+                <li>Implemented camera, collision, scoring, and game-state systems in Python/Pygame</li>
+                <li>Built with modular architecture for easy iteration and expansion</li>
+            </ul>
             <p>
-              [Describe the final outcome and what makes it effective. Mention key design decisions.]
+              Skills: Game systems design, procedural generation, Python, debugging, and human–AI collaboration.
             </p>
           </section>
 
           <!-- OPTIONAL: two images in a row (simple) -->
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <!-- <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
             <figure>
               <img src="images/final-1.jpg" alt="[Describe image 1]" />
               <figcaption>[Caption 1]</figcaption>
@@ -458,9 +456,9 @@
             <p>
               [What you learned, what you’d improve next time, and what you’re proud of.]
             </p>
-          </section>
+          </section> -->
 
-          <section class="section">
+          <!-- <section class="section">
             <h2>Next project</h2>
             <p>
               Link people onward so they don’t dead-end here.
@@ -469,48 +467,38 @@
               <a class="btn" href="index.html#work">Back to work</a>
               <a class="btn primary" href="[project-2.html]">Next: [Project Title]</a>
             </div>
-          </section>
+          </section> -->
         </div>
 
         <!-- RIGHT: sticky sidebar -->
-        <aside class="sidebar" aria-label="On this page">
+        <aside class="sidebar" aria-label="Right sidebar">
+          
+          <div class="card">
+            <p class="side-title">Tags</p>
+           <div class="meta">
+            <div class="meta-row">
+              <span>Timeline</span>
+              1 hour, 2025
+            </div>
+            <div class="meta-row">
+              <span>Tools</span>
+              ChatGPT 5.2, VS Code
+            </div>
+            <div class="meta-row">
+              <span>Team</span>
+              Solo
+            </div>
+          </div>
+          </div>
+
           <div class="card">
             <p class="side-title">On this page</p>
             <div class="links" style="gap:.6rem;">
               <a href="#overview">Overview</a>
               <a href="#process">Process</a>
               <a href="#solution">Solution</a>
-              <a href="#reflection">Reflection</a>
+              <!-- <a href="#reflection">Reflection</a> -->
             </div>
-          </div>
-
-          <div class="card">
-            <p class="side-title">Tags</p>
-            <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
-              <span class="pill">[Tag]</span>
-              <span class="pill">[Tag]</span>
-              <span class="pill">[Tag]</span>
-            </div>
-          </div>
-
-          <div class="card">
-            <p class="side-title">Credits</p>
-            <ul class="side-list">
-              <li>
-                <strong>Role</strong>
-                <span>[e.g., Visual design, photography, layout]</span>
-              </li>
-              <li>
-                <strong>Collaborators</strong>
-                <span>[Names / “N/A”]</span>
-              </li>
-              <li>
-                <strong>Links</strong>
-                <span>
-                  <a href="[link]" target="_blank" rel="noopener">[Optional link]</a>
-                </span>
-              </li>
-            </ul>
           </div>
         </aside>
       </div>

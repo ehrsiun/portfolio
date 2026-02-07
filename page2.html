@@ -1,0 +1,482 @@
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Live Earth Events Map — a NASA EONET interactive visualization in collaboration with ChatGPT." />
+
+  <title>Live Earth Events Map (NASA EONET) — CMU 15-113 HW3</title>
+
+  <style>
+    :root{
+      --bg:#ffffff;
+      --panel:#fafafa;
+      --text:#0b0c0f;
+      --muted:#5b6472;
+      --border:rgba(15,20,30,.12);
+      --shadow:0 10px 30px rgba(0,0,0,.06);
+      --radius:18px;
+      --max:1100px;
+
+      --space-1:.5rem;
+      --space-2:.75rem;
+      --space-3:1rem;
+      --space-4:1.5rem;
+      --space-5:2rem;
+      --space-6:3rem;
+
+      --h1: clamp(2rem, 4vw, 3rem);
+      --h2: clamp(1.25rem, 2.5vw, 1.75rem);
+      --h3: 1.05rem;
+      --p: 1.02rem;
+
+      --accent:#2a5bff;
+      --accent-2:#14b8a6;
+    }
+
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#0b0c0f;
+        --panel:#0f1217;
+        --text:#f3f5f7;
+        --muted:#a6b0bf;
+        --border:rgba(255,255,255,.12);
+        --shadow:0 12px 35px rgba(0,0,0,.35);
+        --accent:#7aa2ff;
+        --accent-2:#2dd4bf;
+      }
+    }
+
+    *{ box-sizing:border-box; }
+    html{ scroll-behavior:smooth; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.55;
+      letter-spacing:-0.01em;
+    }
+
+    .container{
+      width: min(100% - 2rem, var(--max));
+      margin-inline:auto;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:10;
+      backdrop-filter: blur(10px);
+      background: color-mix(in srgb, var(--bg) 70%, transparent);
+      border-bottom:1px solid var(--border);
+    }
+    nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:.9rem 0;
+    }
+    .brand{
+      text-decoration:none;
+      color:inherit;
+      font-weight:650;
+      letter-spacing:-0.02em;
+    }
+    .navlinks{
+      display:flex;
+      gap:.4rem;
+      align-items:center;
+    }
+    .navlinks a{
+      text-decoration:none;
+      color:var(--muted);
+      padding:.55rem .75rem;
+      border-radius:12px;
+      border:1px solid transparent;
+    }
+    .navlinks a:hover{
+      color:var(--text);
+      border-color:var(--border);
+      background:var(--panel);
+    }
+
+    .pill{
+      display:inline-flex;
+      gap:.5rem;
+      align-items:center;
+      padding:.4rem .7rem;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background: color-mix(in srgb, var(--panel) 70%, transparent);
+      color:var(--muted);
+      font-size:.9rem;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:.5rem;
+      padding:.75rem .95rem;
+      border-radius:14px;
+      border:1px solid var(--border);
+      text-decoration:none;
+      color:var(--text);
+      background:var(--panel);
+      box-shadow: 0 1px 0 rgba(255,255,255,.06) inset;
+      white-space:nowrap;
+    }
+    .btn.primary{
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+      background: color-mix(in srgb, var(--accent) 12%, var(--panel));
+    }
+    .btn:hover{ transform: translateY(-1px); }
+    .btn:active{ transform: translateY(0); }
+
+    .card{
+      border:1px solid var(--border);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--panel) 85%, transparent), var(--panel));
+      border-radius:var(--radius);
+      padding:1.1rem;
+      box-shadow:var(--shadow);
+    }
+
+    main{ padding: var(--space-6) 0; }
+
+    .project-hero{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: var(--space-6);
+      align-items:start;
+    }
+    @media (max-width: 900px){
+      .project-hero{ grid-template-columns:1fr; }
+    }
+
+    h1{
+      font-size:var(--h1);
+      line-height:1.08;
+      margin: .6rem 0 1rem;
+      letter-spacing:-0.04em;
+    }
+    .lede{
+      margin:0 0 1.25rem;
+      color:var(--muted);
+      font-size:var(--p);
+      max-width:70ch;
+    }
+
+    .content{
+      margin-top: var(--space-6);
+      display:grid;
+      grid-template-columns: 1fr 320px;
+      gap: 1.5rem;
+      align-items:start;
+    }
+    @media (max-width: 950px){
+      .content{ grid-template-columns: 1fr; }
+    }
+
+    .prose{
+      display:flex;
+      flex-direction:column;
+      gap: 1.25rem;
+    }
+
+    .section{
+      padding: 1.25rem;
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      background:var(--panel);
+      box-shadow: var(--shadow);
+    }
+    .section h2{
+      margin:0 0 .5rem;
+      font-size:var(--h2);
+      letter-spacing:-0.03em;
+    }
+    .section p{
+      margin:.5rem 0 0;
+      color:var(--muted);
+      font-size:var(--p);
+    }
+    .section ul{
+      margin:.75rem 0 0;
+      padding-left: 1.1rem;
+      color:var(--muted);
+      font-size:var(--p);
+    }
+
+    figure{
+      margin:0;
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      overflow:hidden;
+      background:var(--bg);
+    }
+    figure img{
+      width:100%;
+      display:block;
+      height:auto;
+    }
+    figcaption{
+      padding:.85rem 1rem;
+      color:var(--muted);
+      font-size:.95rem;
+      border-top:1px solid var(--border);
+      background: color-mix(in srgb, var(--panel) 70%, transparent);
+    }
+
+    .sidebar{
+      position:sticky;
+      top: 92px;
+      display:flex;
+      flex-direction:column;
+      gap: 1rem;
+    }
+    @media (max-width: 950px){
+      .sidebar{ position:static; }
+    }
+    .side-title{
+      margin:0 0 .6rem;
+      font-size:.95rem;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      color:var(--muted);
+      font-weight:650;
+    }
+
+    .meta{
+      display:grid;
+      gap:.75rem;
+      margin-top:.5rem;
+    }
+    .meta-row{
+      display:flex;
+      justify-content:space-between;
+      gap:1rem;
+      padding:.85rem;
+      border:1px solid var(--border);
+      border-radius:14px;
+      background: color-mix(in srgb, var(--bg) 70%, transparent);
+    }
+    .meta-row span{ color:var(--muted); }
+    .meta-row strong{ font-weight:650; }
+
+    footer{
+      margin-top: var(--space-6);
+      padding: 2rem 0 3rem;
+      border-top:1px solid var(--border);
+      color:var(--muted);
+    }
+    .footer-row{
+      display:flex;
+      justify-content:space-between;
+      gap:1rem;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .links{ display:flex; gap:.75rem; flex-wrap:wrap; }
+    .links a{
+      color:var(--muted);
+      text-decoration:none;
+      border-bottom:1px solid transparent;
+    }
+    .links a:hover{
+      color:var(--text);
+      border-bottom-color:var(--border);
+    }
+
+    .anchor{ scroll-margin-top: 110px; }
+
+    code{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: .95em;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <nav aria-label="Primary">
+        <a class="brand" href="index.html">Erin Hsu</a>
+        <div class="navlinks">
+          <a href="index.html#work">Work</a>
+          <a href="index.html#about">About</a>
+          <a href="index.html#contact">Contact</a>
+          <a class="btn primary" href="index.html#contact" style="padding:.6rem .85rem;">Let’s talk</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+
+      <div class="project-hero">
+        <div>
+          <div class="pill">
+            <span>API + data visualization</span>
+            <span>•</span>
+            <span>coding with AI</span>
+          </div>
+
+          <h1>Live Earth Events Map (NASA EONET)</h1>
+
+          <p class="lede">
+            A lightweight, interactive map that visualizes live natural events
+            using NASA’s EONET API.
+          </p>
+
+          <div style="display:flex; gap:.75rem; flex-wrap:wrap;">
+            <a class="btn primary" href="#overview">Jump to overview</a>
+            <a class="btn" href="[LINK-TO-LIVE-SITE]" target="_blank" rel="noopener">View live</a>
+            <a class="btn" href="[LINK-TO-GITHUB-REPO]" target="_blank" rel="noopener">View code</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Optional cover image: screenshot of your app -->
+      <!--
+      <div class="cover" style="margin-top: var(--space-5); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; background:var(--panel); box-shadow:var(--shadow);">
+        <img src="images/eonet-cover.jpg" alt="Screenshot of Live Earth Events Map interface" />
+      </div>
+      -->
+
+      <div class="content">
+        <div class="prose">
+
+          <section id="overview" class="section anchor">
+            <h2>Overview</h2>
+            <p>
+              This project was created for CMU 15-113 HW3: <strong>Explore an API</strong>, where the goal is to use AI tools to integrate a
+              public API into a small but interesting app (with interactivity and clear documentation).
+              <br><br>
+              I built a single-page web experience that pulls live natural event data from <strong>NASA EONET v3</strong> and renders it on a map
+              as clickable markers and polygons. Users can filter by event status, category, and result count, then open an “editorial”
+              side panel for details and sources.
+            </p>
+            <ul>
+              <li><strong>Goal:</strong> Make an interactive data visualization (not just “fetch and print”) using a real public API.</li>
+              <li><strong>API:</strong> NASA EONET v3 (events + categories endpoints, JSON responses with GeoJSON-like geometry).</li>
+              <li><strong>Output:</strong> Digital + interactive (map interactions, filters, and a sidebar “story card”).</li>
+            </ul>
+          </section>
+
+          <section id="process" class="section anchor">
+            <h2>Process</h2>
+            <p>
+              I started by translating the assignment requirements into a tight MVP: (1) fetch EONET categories, (2) fetch events with parameters,
+              (3) render event geometry on a map, and (4) add interactive controls and a detail view.
+              <br><br>
+              Implementation was built iteratively with AI assistance, focusing on getting a stable deployed version first (Vite + GitHub Pages),
+              then layering on interaction and UI polish.
+            </p>
+            <ul>
+              <li><strong>Step 1 — API exploration:</strong> Read EONET docs, identify the key endpoints (<code>/categories</code>, <code>/events</code>) and filter parameters (<code>status</code>, <code>limit</code>, <code>category</code>).</li>
+              <li><strong>Step 2 — Map MVP:</strong> Render the most recent event geometry as markers (Point) and polygons (Polygon), with click-to-select behavior.</li>
+              <li><strong>Step 3 — Interactions:</strong> Add hover tooltip/highlight, “Zoom to event,” and filter UI that refetches data when changed.</li>
+              <li><strong>Step 4 — Clarity + packaging:</strong> Add a small counts-by-category visualization, write a README explaining the API calls, and create a prompt log for AI collaboration.</li>
+            </ul>
+          </section>
+
+          <section id="outcome" class="section anchor">
+            <h2>Outcome</h2>
+            <ul>
+              <li>Interactive map dashboard that visualizes live EONET events with hover + click details</li>
+              <li>Filters for status (open/closed/all), category multi-select, and result limits</li>
+              <li>Sidebar “story card” showing category tags, latest geometry timestamp, and source links</li>
+              <li>Compact counts-by-category view to summarize the current dataset</li>
+              <li>Deployed as a static web app (GitHub Pages)</li>
+            </ul>
+            <p>
+              Skills: API integration, data parsing (GeoJSON-like geometry), interactive UI patterns, and rapid prototyping with AI collaboration.
+            </p>
+          </section>
+
+          <!-- Optional: add a screenshot gallery -->
+          <!--
+          <figure>
+            <img src="images/eonet-ui.jpg" alt="Map with sidebar and filters" />
+            <figcaption>Filters, hover tooltips, and a sidebar “story card” for each event.</figcaption>
+          </figure>
+          -->
+
+        </div>
+
+        <aside class="sidebar" aria-label="Right sidebar">
+
+          <div class="card">
+            <p class="side-title">Project info</p>
+            <div class="meta">
+              <div class="meta-row">
+                <span>Timeline</span>
+                <strong>~2–3 hours</strong>
+              </div>
+              <div class="meta-row">
+                <span>Tools</span>
+                <strong>Vite, Leaflet, VS Code</strong>
+              </div>
+              <div class="meta-row">
+                <span>API</span>
+                <strong>NASA EONET v3</strong>
+              </div>
+              <div class="meta-row">
+                <span>Team</span>
+                <strong>Solo (AI-assisted)</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <p class="side-title">Links</p>
+            <div class="links" style="gap:.6rem;">
+              <a href="https://www.cs.cmu.edu/~113/hw3.html" target="_blank" rel="noopener">Assignment brief</a>
+              <a href="[LINK-TO-LIVE-SITE]" target="_blank" rel="noopener">Live site</a>
+              <a href="[LINK-TO-GITHUB-REPO]" target="_blank" rel="noopener">GitHub repo</a>
+            </div>
+          </div>
+
+          <div class="card">
+            <p class="side-title">On this page</p>
+            <div class="links" style="gap:.6rem;">
+              <a href="#overview">Overview</a>
+              <a href="#process">Process</a>
+              <a href="#outcome">Outcome</a>
+            </div>
+          </div>
+
+          <div class="card">
+            <p class="side-title">AI collaboration</p>
+            <p style="margin:0;color:var(--muted);font-size:var(--p);">
+              Built with planning + code-generation support from ChatGPT. Final integration, testing, and deployment were completed by me.
+            </p>
+          </div>
+
+        </aside>
+      </div>
+
+      <footer>
+        <div class="footer-row">
+          <small>© <span id="year"></span> Erin Hsu. Built with HTML/CSS.</small>
+          <div class="links" aria-label="Footer links">
+            <a href="index.html#top">Home</a>
+            <a href="index.html#work">Work</a>
+            <a href="index.html#contact">Contact</a>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  </main>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
+```

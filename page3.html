@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Spiral Weather + Sleep Tracker — a clock-based data visualization powered by a Flask backend and Open-Meteo, built for CMU 15-113 HW4." />
+
+  <title>Spiral Weather + Sleep Tracker — CMU 15-113 HW4</title>
+
+  <style>
+    :root{
+      --bg:#ffffff;
+      --panel:#fafafa;
+      --text:#0b0c0f;
+      --muted:#5b6472;
+      --border:rgba(15,20,30,.12);
+      --shadow:0 10px 30px rgba(0,0,0,.06);
+      --radius:18px;
+      --max:1100px;
+
+      --space-1:.5rem;
+      --space-2:.75rem;
+      --space-3:1rem;
+      --space-4:1.5rem;
+      --space-5:2rem;
+      --space-6:3rem;
+
+      --h1: clamp(2rem, 4vw, 3rem);
+      --h2: clamp(1.25rem, 2.5vw, 1.75rem);
+      --h3: 1.05rem;
+      --p: 1.02rem;
+
+      --accent:#2a5bff;
+      --accent-2:#14b8a6;
+    }
+
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#0b0c0f;
+        --panel:#0f1217;
+        --text:#f3f5f7;
+        --muted:#a6b0bf;
+        --border:rgba(255,255,255,.12);
+        --shadow:0 12px 35px rgba(0,0,0,.35);
+        --accent:#7aa2ff;
+        --accent-2:#2dd4bf;
+      }
+    }
+
+    *{ box-sizing:border-box; }
+    html{ scroll-behavior:smooth; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.55;
+      letter-spacing:-0.01em;
+    }
+
+    .container{
+      width: min(100% - 2rem, var(--max));
+      margin-inline:auto;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:10;
+      backdrop-filter: blur(10px);
+      background: color-mix(in srgb, var(--bg) 70%, transparent);
+      border-bottom:1px solid var(--border);
+    }
+    nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:.9rem 0;
+    }
+    .brand{
+      text-decoration:none;
+      color:inherit;
+      font-weight:650;
+      letter-spacing:-0.02em;
+    }
+    .navlinks{
+      display:flex;
+      gap:.4rem;
+      align-items:center;
+    }
+    .navlinks a{
+      text-decoration:none;
+      color:var(--muted);
+      padding:.55rem .75rem;
+      border-radius:12px;
+      border:1px solid transparent;
+    }
+    .navlinks a:hover{
+      color:var(--text);
+      border-color:var(--border);
+      background:var(--panel);
+    }
+
+    .pill{
+      display:inline-flex;
+      gap:.5rem;
+      align-items:center;
+      padding:.4rem .7rem;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background: color-mix(in srgb, var(--panel) 70%, transparent);
+      color:var(--muted);
+      font-size:.9rem;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:.5rem;
+      padding:.75rem .95rem;
+      border-radius:14px;
+      border:1px solid var(--border);
+      text-decoration:none;
+      color:var(--text);
+      background:var(--panel);
+      box-shadow: 0 1px 0 rgba(255,255,255,.06) inset;
+      white-space:nowrap;
+    }
+    .btn.primary{
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+      background: color-mix(in srgb, var(--accent) 12%, var(--panel));
+    }
+    .btn:hover{ transform: translateY(-1px); }
+    .btn:active{ transform: translateY(0); }
+
+    .card{
+      border:1px solid var(--border);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--panel) 85%, transparent), var(--panel));
+      border-radius:var(--radius);
+      padding:1.1rem;
+      box-shadow:var(--shadow);
+    }
+
+    main{ padding: var(--space-6) 0; }
+
+    .project-hero{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: var(--space-6);
+      align-items:start;
+    }
+    @media (max-width: 900px){
+      .project-hero{ grid-template-columns:1fr; }
+    }
+
+    h1{
+      font-size:var(--h1);
+      line-height:1.08;
+      margin: .6rem 0 1rem;
+      letter-spacing:-0.04em;
+    }
+    .lede{
+      margin:0 0 1.25rem;
+      color:var(--muted);
+      font-size:var(--p);
+      max-width:70ch;
+    }
+
+    .content{
+      margin-top: var(--space-6);
+      display:grid;
+      grid-template-columns: 1fr 320px;
+      gap: 1.5rem;
+      align-items:start;
+    }
+    @media (max-width: 950px){
+      .content{ grid-template-columns: 1fr; }
+    }
+
+    .prose{
+      display:flex;
+      flex-direction:column;
+      gap: 1.25rem;
+    }
+
+    .section{
+      padding: 1.25rem;
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      background:var(--panel);
+      box-shadow: var(--shadow);
+    }
+    .section h2{
+      margin:0 0 .5rem;
+      font-size:var(--h2);
+      letter-spacing:-0.03em;
+    }
+    .section p{
+      margin:.5rem 0 0;
+      color:var(--muted);
+      font-size:var(--p);
+    }
+    .section ul{
+      margin:.75rem 0 0;
+      padding-left: 1.1rem;
+      color:var(--muted);
+      font-size:var(--p);
+    }
+
+    figure{
+      margin:0;
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      overflow:hidden;
+      background:var(--bg);
+    }
+    figure img{
+      width:100%;
+      display:block;
+      height:auto;
+    }
+    figcaption{
+      padding:.85rem 1rem;
+      color:var(--muted);
+      font-size:.95rem;
+      border-top:1px solid var(--border);
+      background: color-mix(in srgb, var(--panel) 70%, transparent);
+    }
+
+    .sidebar{
+      position:sticky;
+      top: 92px;
+      display:flex;
+      flex-direction:column;
+      gap: 1rem;
+    }
+    @media (max-width: 950px){
+      .sidebar{ position:static; }
+    }
+    .side-title{
+      margin:0 0 .6rem;
+      font-size:.95rem;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      color:var(--muted);
+      font-weight:650;
+    }
+
+    .meta{
+      display:grid;
+      gap:.75rem;
+      margin-top:.5rem;
+    }
+    .meta-row{
+      display:flex;
+      justify-content:space-between;
+      gap:1rem;
+      padding:.85rem;
+      border:1px solid var(--border);
+      border-radius:14px;
+      background: color-mix(in srgb, var(--bg) 70%, transparent);
+    }
+    .meta-row span{ color:var(--muted); }
+    .meta-row strong{ font-weight:650; }
+
+    footer{
+      margin-top: var(--space-6);
+      padding: 2rem 0 3rem;
+      border-top:1px solid var(--border);
+      color:var(--muted);
+    }
+    .footer-row{
+      display:flex;
+      justify-content:space-between;
+      gap:1rem;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .links{ display:flex; gap:.75rem; flex-wrap:wrap; }
+    .links a{
+      color:var(--muted);
+      text-decoration:none;
+      border-bottom:1px solid transparent;
+    }
+    .links a:hover{
+      color:var(--text);
+      border-bottom-color:var(--border);
+    }
+
+    .anchor{ scroll-margin-top: 110px; }
+
+    code{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: .95em;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <nav aria-label="Primary">
+        <a class="brand" href="index.html">Erin Hsu</a>
+        <div class="navlinks">
+          <a href="index.html#work">Work</a>
+          <a href="index.html#about">About</a>
+          <a href="index.html#contact">Contact</a>
+          <a class="btn primary" href="index.html#contact" style="padding:.6rem .85rem;">Let’s talk</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+
+      <div class="project-hero">
+        <div>
+          <div class="pill">
+            <span>full-stack</span>
+            <span>•</span>
+            <span>data visualization</span>
+            <span>•</span>
+            <span>coding with AI</span>
+          </div>
+
+          <h1>Spiral Weather + Sleep Tracker</h1>
+
+          <p class="lede">
+            A clock-based spiral visualization that turns weather + user-entered sleep into a quick “at-a-glance” daily read.
+            Built for CMU 15-113 HW4 by deploying a Flask backend (Render) and connecting it to a deployed frontend.
+          </p>
+
+          <div style="display:flex; gap:.75rem; flex-wrap:wrap;">
+            <a class="btn primary" href="#overview">Jump to overview</a>
+            <a class="btn" href="[LINK-TO-LIVE-FRONTEND]" target="_blank" rel="noopener">View live</a>
+            <a class="btn" href="[LINK-TO-FRONTEND-REPO]" target="_blank" rel="noopener">Frontend code</a>
+            <a class="btn" href="https://github.com/ehrsiun/spiral-backend" target="_blank" rel="noopener">Backend code</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="prose">
+
+          <section id="overview" class="section anchor">
+            <h2>Overview</h2>
+            <p>
+              This project was created for CMU 15-113 HW4, which focuses on creating a backend service, deploying it, and connecting it to a frontend.
+              I used this assignment to build on a previous design-class concept: a spiral “clockface” that visualizes sleep periods and temperature
+              across the day for quick understanding.
+              <br><br>
+              The backend proxies and normalizes hourly temperature data from <strong>Open-Meteo</strong>, and the frontend renders the spiral by mapping
+              temperature to a color gradient and sleep periods to dark gray.
+            </p>
+            <ul>
+              <li><strong>Goal:</strong> Turn a conceptual design into a working full-stack app with a deployed backend + frontend.</li>
+              <li><strong>Backend:</strong> Flask API deployed on Render.</li>
+              <li><strong>Data source:</strong> Open-Meteo hourly temperature endpoint.</li>
+              <li><strong>Frontend output:</strong> A spiral “clock” that shows future time (light gray), sleep (dark gray), and awake temperature (color gradient) minute-by-minute.</li>
+            </ul>
+          </section>
+
+          <section id="process" class="section anchor">
+            <h2>Process</h2>
+            <p>
+              I approached HW4 in two tracks: (1) stabilize the spiral visualization and data model on the frontend, then (2) build a backend that serves
+              weather data to the frontend in a clean, consistent format.
+            </p>
+            <ul>
+              <li><strong>Step 1 — Spiral MVP:</strong> Render a 24-hour spiral clockface with minute-level segments and a “current time” marker.</li>
+              <li><strong>Step 2 — Sleep + temperature mapping:</strong> Map sleep minutes to dark gray, and awake minutes to a temperature gradient using interpolation between hourly values.</li>
+              <li><strong>Step 3 — Backend API:</strong> Implement <code>/api/hourly</code> that accepts <code>lat</code>/<code>lon</code> and returns 24 hourly temps starting at local midnight.</li>
+              <li><strong>Step 4 — Deploy + connect:</strong> Deploy backend to Render, enable CORS, then update the frontend to fetch from the deployed endpoint.</li>
+              <li><strong>Step 5 — Documentation:</strong> Write README with endpoint docs, setup instructions, and prompt log (AI usage).</li>
+            </ul>
+          </section>
+
+          <section id="outcome" class="section anchor">
+            <h2>Outcome</h2>
+            <ul>
+              <li>Deployed Flask backend on Render that returns normalized hourly temperatures (24 values from local midnight)</li>
+              <li>Frontend fetches backend data and renders minute-level spiral progress with a cold-to-hot gradient</li>
+              <li>Sleep window overlay using user-entered bedtime and wake time</li>
+              <li>Clear separation of concerns: backend handles external API requests; frontend handles visualization</li>
+            </ul>
+            <p>
+              Skills: backend API design, deployment (Render), frontend-backend integration, and translating a design concept into a functional interactive visualization.
+            </p>
+          </section>
+
+        </div>
+
+        <aside class="sidebar" aria-label="Right sidebar">
+
+          <div class="card">
+            <p class="side-title">Project info</p>
+            <div class="meta">
+              <div class="meta-row">
+                <span>Course</span>
+                <strong>CMU 15-113</strong>
+              </div>
+              <div class="meta-row">
+                <span>Assignment</span>
+                <strong>HW4</strong>
+              </div>
+              <div class="meta-row">
+                <span>Backend</span>
+                <strong>Flask + Render</strong>
+              </div>
+              <div class="meta-row">
+                <span>Data</span>
+                <strong>Open-Meteo</strong>
+              </div>
+              <div class="meta-row">
+                <span>Team</span>
+                <strong>Solo (AI-assisted)</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <p class="side-title">Links</p>
+            <div class="links" style="gap:.6rem;">
+              <a href="https://www.cs.cmu.edu/~113/hw4.html" target="_blank" rel="noopener">Assignment brief</a>
+              <a href="[LINK-TO-LIVE-FRONTEND]" target="_blank" rel="noopener">Live site</a>
+              <a href="[LINK-TO-FRONTEND-REPO]" target="_blank" rel="noopener">Frontend repo</a>
+              <a href="https://github.com/ehrsiun/spiral-backend" target="_blank" rel="noopener">Backend repo</a>
+              <a href="https://spiral-backend-o488.onrender.com" target="_blank" rel="noopener">Backend live (Render)</a>
+            </div>
+          </div>
+
+          <div class="card">
+            <p class="side-title">On this page</p>
+            <div class="links" style="gap:.6rem;">
+              <a href="#overview">Overview</a>
+              <a href="#process">Process</a>
+              <a href="#outcome">Outcome</a>
+            </div>
+          </div>
+
+          <div class="card">
+            <p class="side-title">AI collaboration</p>
+            <p style="margin:0;color:var(--muted);font-size:var(--p);">
+              Built with planning + debugging support from ChatGPT. Final integration, testing, and deployment were completed by me.
+            </p>
+          </div>
+
+        </aside>
+      </div>
+
+      <footer>
+        <div class="footer-row">
+          <small>© <span id="year"></span> Erin Hsu. Built with HTML/CSS.</small>
+          <div class="links" aria-label="Footer links">
+            <a href="index.html#top">Home</a>
+            <a href="index.html#work">Work</a>
+            <a href="index.html#contact">Contact</a>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  </main>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
